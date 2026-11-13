@@ -55,6 +55,16 @@ router.post('/forms/:key/submissions', submitLimiter, async (req, res) => {
 })
 
 // Editable page content (only sections changed in the admin panel - the website has defaults for the rest).
+// Every page at once, so the website needs a single request before it renders.
+router.get('/content', async (_req, res) => {
+  const pages = Object.fromEntries(Object.keys(PAGE_SECTIONS).map((page) => [page, {}]))
+  const docs = await PageContent.find({ page: { $in: Object.keys(pages) } }).lean()
+  for (const doc of docs) pages[doc.page] = doc.sections ?? {}
+  res.set('Cache-Control', 'no-store')
+  res.json({ pages })
+})
+
+// One page, for the admin editor.
 router.get('/content/:page', async (req, res) => {
   if (!PAGE_SECTIONS[req.params.page]) return res.status(404).json({ message: 'Page not found' })
   const doc = await PageContent.findOne({ page: req.params.page }).lean()
