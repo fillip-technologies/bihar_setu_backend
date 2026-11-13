@@ -9,19 +9,24 @@ Add an **A record** where `fillipsoftware.com` DNS is managed:
 
 | Type | Name                 | Value                  |
 | ---- | -------------------- | ---------------------- |
-| A    | `bihar-setu-backend` | your aaPanel server IP |
+| A    | `bihar-setu-backend` | `72.61.240.178`        |
+
+Remove any **AAAA** or **CNAME** record for `bihar-setu-backend`, and don't create it as a subdomain/website in Hostinger hPanel. Otherwise visitors (and the Let's Encrypt check) land on Hostinger instead of aaPanel.
+Done when `nslookup bihar-setu-backend.fillipsoftware.com 8.8.8.8` returns only `72.61.240.178`.
 
 ## 2. Server software (aaPanel → App Store)
 
 - **Nginx**
 - **Node.js version manager**: install **Node 20.19+** (22 LTS recommended). Mongoose 9 will not run on older versions.
-- **MongoDB** (skip if you use MongoDB Atlas). After installing, enable authentication and create a user:
+- **MongoDB** (skip if you use MongoDB Atlas). It runs with authentication enabled, so the API needs its own login.
+  In aaPanel → **Databases → MongoDB → Add database**, create database `bihar_setu` with a user and password. Then set:
 
-  ```js
-  // mongosh
-  use admin
-  db.createUser({ user: 'biharsetu', pwd: '<db-password>', roles: [{ role: 'readWrite', db: 'bihar_setu' }] })
   ```
+  MONGODB_URI=mongodb://<db-user>:<db-password>@127.0.0.1:27017/bihar_setu
+  ```
+
+  A URI without a user and password connects, then crashes on the first query with `Command find requires authentication`.
+  Add `?authSource=admin` only if you created the user in the `admin` database instead.
 
   If you use Atlas instead, add the aaPanel server IP to Atlas → Network Access.
 
@@ -112,7 +117,7 @@ The first start seeds the forms and admin account. Page content edited on your l
 # on your PC
 mongodump --uri "mongodb://127.0.0.1:27017/bihar_setu" --archive=bihar_setu.archive
 # upload bihar_setu.archive to the server, then on the server:
-mongorestore --uri "mongodb://biharsetu:<db-password>@127.0.0.1:27017/?authSource=admin" --archive=bihar_setu.archive --drop
+mongorestore --uri "mongodb://<db-user>:<db-password>@127.0.0.1:27017/bihar_setu" --archive=bihar_setu.archive --drop
 ```
 
 Then restart the Node project, so the admin login from the production `.env` is applied again.
