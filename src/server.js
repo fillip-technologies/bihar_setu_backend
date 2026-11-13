@@ -9,7 +9,7 @@ import app from './app.js'
 await connectDB()
 await syncAdmin({ email: env.adminEmail, password: env.adminPassword })
 await seedForms(FormDefinition)
-app.listen(env.port, () => {
-  console.log(`Bihar Setu API listening on http://localhost:${env.port}`)
+app.listen(env.port, env.host, () => {
+  console.log(`Bihar Setu API listening on http://${env.host}:${env.port}`)
   console.log(`Image uploads: ${storageMode === 'cloudinary' ? 'Cloudinary' : 'local server/uploads folder'}`)
 })

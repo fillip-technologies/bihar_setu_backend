@@ -31,6 +31,10 @@ function readCloudinary() {
 
 export const env = {
   port: Number(process.env.PORT) || 5000,
+  // 127.0.0.1 in production so the API is only reachable through the Nginx reverse proxy.
+  host: process.env.HOST || '0.0.0.0',
+  // Number of reverse proxies in front of the API (1 behind aaPanel's Nginx), so rate limits see the real client IP.
+  trustProxy: Number(process.env.TRUST_PROXY) || 0,
   mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bihar_setu',
   corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:5173')
     .split(',')

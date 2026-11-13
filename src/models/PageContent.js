@@ -17,4 +17,6 @@ export const PAGE_SECTIONS = {
     'header', 'dignitaries', 'hero', 'impact', 'about', 'explore', 'connect',
     'attend', 'tracks', 'sectors', 'activation', 'faq', 'contact', 'footer',
   ],
+  // The About page also shows the Home page's "about" (First Edition) and "contact" sections.
+  about: ['hero', 'platform', 'transform'],
 }

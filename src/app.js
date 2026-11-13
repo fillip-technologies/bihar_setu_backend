@@ -9,6 +9,7 @@ import adminRoutes from './routes/admin.js'
 
 const app = express()
 
+app.set('trust proxy', env.trustProxy)
 app.use(helmet())
 app.use(cors({ origin: env.corsOrigins, exposedHeaders: ['Content-Disposition'] }))
 app.use(express.json({ limit: '1mb' }))
